@@ -1,0 +1,17 @@
+{
+  "name": "holamundo",
+  "version": "1.0.0",
+  "description": "hola mundo",
+  "license": "ISC",
+  "author": "Alan Roman",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
