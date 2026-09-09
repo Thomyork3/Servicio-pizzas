@@ -1,133 +1,68 @@
-const express = require("express");
+import express from 'express';
+import { 
+    obtenerTodasLasPizzasAsync, 
+    obtenerPizzaPorIdAsync, 
+    agregarPizzaAsync, 
+    actualizarPizzaAsync, 
+    borrarPizzaAsync 
+} from './repositorios/pizza.repositorio.js';
+
 const app = express();
-const PORT = 3000; // Puerto en el que escuchará el servidor
-app.use(express.json())
-app.use(express.urlencoded())
-// aquí definiríamos las rutas
-app.get("/", (req, res) => {
-  const saludo = { mensaje: "Hola mundo V1" };
-  return res.json(saludo);
-});
+const PORT = 3000;
 
-app.get("/api/v1/saludos", (req, res)=>{
-  const saludo = { mensaje: "Hola mundo, desde nodejs" }
-  return res.json(saludo)
-})
 
-app.get("/api/v1/error", (req, res)=>{
-  const respuesta = { mensaje: "Oops ocurrio un error" }
-  return res.status(500).json(respuesta)
+app.use(express.json());
+
+
+app.get('/api/v1/pizzas', async (req, res) => {
+    const pizzas = await obtenerTodasLasPizzasAsync();
+    res.json(pizzas);
 });
 
 
-//prueba
-
-app.get("/api/v1/202", (req, res)=>{
-  const respuesta = { mensaje: "aceptado" }
-  return res.status(500).json(respuesta)
+app.get('/api/v1/pizzas/:id', async (req, res) => {
+    const id = req.params.id;
+    const pizza = await obtenerPizzaPorIdAsync(id);
+    if (pizza) {
+        res.json(pizza);
+    } else {
+        res.status(404).json({ mensaje: "Pizza no encontrada" });
+    }
 });
 
-app.get("/api/v1/error400", (req, res)=>{
-  const respuesta = { mensaje: "mala solicitud" }
-  return res.status(500).json(respuesta)
+
+app.post('/api/v1/pizzas', async (req, res) => {
+    const datosNuevaPizza = req.body;
+    const pizzaCreada = await agregarPizzaAsync(datosNuevaPizza);
+    res.status(201).json(pizzaCreada); // 201 significa "Creado"
 });
 
-app.get("/api/v1/error401", (req, res)=>{
-  const respuesta = { mensaje: "Oops ocurrio un error" }
-  return res.status(500).json(respuesta)
+
+app.put('/api/v1/pizzas/:id', async (req, res) => {
+    const id = req.params.id;
+    const datosAActualizar = req.body;
+    const pizzaActualizada = await actualizarPizzaAsync(id, datosAActualizar);
+    
+    if (pizzaActualizada) {
+        res.json(pizzaActualizada);
+    } else {
+        res.status(404).json({ mensaje: "Pizza no encontrada" });
+    }
 });
 
-app.get("/api/v1/error404", (req, res)=>{
-  const respuesta = { mensaje: "pOos no se encontrò" }
-  return res.status(500).json(respuesta)
+
+app.delete('/api/v1/pizzas/:id', async (req, res) => {
+    const id = req.params.id;
+    const pizzaBorrada = await borrarPizzaAsync(id);
+    
+    if (pizzaBorrada) {
+        res.json({ mensaje: "Pizza borrada correctamente", pizza: pizzaBorrada });
+    } else {
+        res.status(404).json({ mensaje: "Pizza no encontrada" });
+    }
 });
 
-app.get("/api/v1/201", (req, res)=>{
-  const respuesta = { mensaje: "creado" }
-  return res.status(500).json(respuesta)
-});
 
-//tarea
-app.get("/api/v1/pizzas", (req, res) => {
-  const pizzas = [
-    { nombre: "Peperoni", descripcion: "Pizza clásica de peperoni" },
-    { nombre: "Hawaiana", descripcion: "Jamon y piña" },
-    { nombre: "3 Quesos", descripcion: "Mezcla de tres quesos" }
-  ];
-  return res.status(200).json(pizzas);
-});
-
-app.get("/api/v1/pizzas/peperoni", (req, res) => {
-  const respuesta = { mensaje: "pizza sabor peperoni" };
-  return res.status(200).json(respuesta);
-});
-
-app.get("/api/v1/pizzas/hawaiana", (req, res) => {
-  const respuesta = { mensaje: "pizza sabor hawaiana" };
-  return res.status(200).json(respuesta);
-});
-
-app.get("/api/v1/pizzas/3quesos", (req, res) => {
-  const respuesta = { mensaje: "pizza sabor 3 quesos" };
-  return res.status(200).json(respuesta);
-});
-
-app.get("/api/v1/pizzas/:id", (req, res) => {
-  console.log(req.query);
-  console.log(req.path);
-  const pizzas = [{ nombre: "Hawaiana", descripcion: "Jamon y piña" }];
-  return res.status(200).json(pizzas);
-});
-
-app.get("/api/v1/bebidas", (req, res) => {
-  const bebidas = [
-    { nombre: "Agua de Horchata" },
-    { nombre: "Agua de Jamaica" },
-    { nombre: "Agua de Limón" }
-  ];
-  return res.status(200).json(bebidas);
-});
-
-app.get("/api/v1/bebidas/aguaHorchata", (req, res) => {
-  const respuesta = { mensaje: "bebida agua de horchata" };
-  return res.status(200).json(respuesta);
-});
-
-app.get("/api/v1/bebidas/aguaJamaica", (req, res) => {
-  const respuesta = { mensaje: "bebida agua de jamaica" };
-  return res.status(200).json(respuesta);
-});
-
-app.get("/api/v1/bebidas/aguaLimon", (req, res) => {
-  const respuesta = { mensaje: "bebida agua de limon" };
-  return res.status(200).json(respuesta);
-});
-
-app.get("/api/v1/tamanios", (req, res) => {
-  const tamanios = [
-    { tamaño: "Chico", porciones: 4 },
-    { tamaño: "Mediano", porciones: 8 },
-    { tamaño: "Grande", porciones: 12 }
-  ];
-  return res.status(200).json(tamanios);
-});
-
-app.get("/api/v1/tamanios/chico", (req, res) => {
-  const respuesta = { mensaje: "tamanio chico" };
-  return res.status(200).json(respuesta);
-});
-
-app.get("/api/v1/tamanios/mediano", (req, res) => {
-  const respuesta = { mensaje: "tamanio mediano" };
-  return res.status(200).json(respuesta);
-});
-
-app.get("/api/v1/tamanios/grande", (req, res) => {
-  const respuesta = { mensaje: "tamanio grande" };
-  return res.status(200).json(respuesta);
-});
-
-// Iniciar el servidor
 app.listen(PORT, () => {
-  console.log(`Servidor Express escuchando en el puerto ${PORT}`);
+    console.log(` Servidor de pizzas corriendo en http://localhost:${PORT}`);
 });
