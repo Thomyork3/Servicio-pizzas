@@ -29,7 +29,7 @@ export async function obtenerPizzaPorIdAsync(id) {
  */
 export async function agregarPizzaAsync(pizza) {
     await sleep(1000)
-    // Generamos un ID autoincrementable simple
+   
     const maxId = pizzas.length > 0 ? Math.max(...pizzas.map(p => p.id)) : 0;
     const nuevaPizza = { id: maxId + 1, ...pizza };
     pizzas.push(nuevaPizza)
@@ -46,11 +46,10 @@ export async function actualizarPizzaAsync(id, pizzaActualizada) {
     const index = pizzas.findIndex(x => x.id == id)
     
     if (index !== -1) {
-        // Mantiene el id original pero actualiza los demás campos
         pizzas[index] = { ...pizzas[index], ...pizzaActualizada, id: pizzas[index].id }
         return pizzas[index]
     }
-    return undefined // Retorna undefined si no encuentra la pizza
+    return undefined 
 }
 
 /**
@@ -62,7 +61,6 @@ export async function borrarPizzaAsync(id) {
     const index = pizzas.findIndex(x => x.id == id)
     
     if (index !== -1) {
-        // Elimina 1 elemento en la posición 'index'
         const pizzaBorrada = pizzas.splice(index, 1)
         return pizzaBorrada[0]
     }
