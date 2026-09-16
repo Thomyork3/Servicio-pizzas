@@ -1,68 +1,63 @@
+import mongoose from 'mongoose';
 
+// Tu cadena de conexión con la base de datos "pizzeria" agregada
+const MONGO_URI = "mongodb+srv://alan:asdfghj@posters.9ztuebm.mongodb.net/pizzeria?appName=Posters";
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+// Conexión a la base de datos
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("Conectado a MongoDB Atlas exitosamente"))
+  .catch((error) => console.error("Error al conectar a MongoDB:", error));
 
-let pizzas = [{ id: 1, nombre: "Hawaiina", descripcion: "Jamon y piña" }]
+// Esquema y Modelo de Mongoose
+const pizzaSchema = new mongoose.Schema({
+  nombre: { type: String, required: true },
+  descripcion: { type: String, required: true }
+}, { versionKey: false });
+
+const Pizza = mongoose.model('Pizza', pizzaSchema);
 
 /**
-
- * @returns []
+ * Obtiene todas las pizzas almacenadas en la base de datos.
+ * @returns {Promise<Array>} Un arreglo de objetos de pizzas.
  */
 export async function obtenerTodasLasPizzasAsync() {
-    await sleep(2000)
-    return pizzas
+    return await Pizza.find();
 }
 
 /**
-
- * @param {*} id
+ * Busca y retorna una pizza específica por su ID.
+ * @param {String} id - El identificador único de Mongo de la pizza.
+ * @returns {Promise<Object|null>} El objeto de la pizza o null si no existe.
  */
 export async function obtenerPizzaPorIdAsync(id) {
-    await sleep(1000)
-    const pizza = pizzas.find(x => x.id == id)
-    return pizza
+    return await Pizza.findById(id);
 }
 
 /**
- 
- * @param {*} pizza 
+ * Crea y guarda una nueva pizza en la base de datos.
+ * @param {Object} pizza - Objeto con los datos de la nueva pizza (nombre, descripcion).
+ * @returns {Promise<Object>} La pizza creada con su nuevo ID generado por Mongo.
  */
 export async function agregarPizzaAsync(pizza) {
-    await sleep(1000)
-   
-    const maxId = pizzas.length > 0 ? Math.max(...pizzas.map(p => p.id)) : 0;
-    const nuevaPizza = { id: maxId + 1, ...pizza };
-    pizzas.push(nuevaPizza)
-    return nuevaPizza
+    const nuevaPizza = new Pizza(pizza);
+    return await nuevaPizza.save();
 }
 
 /**
- 
- * @param {*} id 
- * @param {*} pizzaActualizada 
+ * Actualiza los datos de una pizza existente por su ID.
+ * @param {String} id - El ID de la pizza a actualizar.
+ * @param {Object} datosNuevos - Objeto con los campos a actualizar.
+ * @returns {Promise<Object|null>} La pizza actualizada o null si no se encontró.
  */
-export async function actualizarPizzaAsync(id, pizzaActualizada) {
-    await sleep(1000)
-    const index = pizzas.findIndex(x => x.id == id)
-    
-    if (index !== -1) {
-        pizzas[index] = { ...pizzas[index], ...pizzaActualizada, id: pizzas[index].id }
-        return pizzas[index]
-    }
-    return undefined 
+export async function actualizarPizzaAsync(id, datosNuevos) {
+    return await Pizza.findByIdAndUpdate(id, datosNuevos, { new: true });
 }
 
 /**
- 
- * @param {*} id 
+ * Elimina una pizza de la base de datos usando su ID.
+ * @param {String} id - El ID de la pizza a eliminar.
+ * @returns {Promise<Object|null>} La pizza eliminada o null si no se encontró.
  */
 export async function borrarPizzaAsync(id) {
-    await sleep(1000)
-    const index = pizzas.findIndex(x => x.id == id)
-    
-    if (index !== -1) {
-        const pizzaBorrada = pizzas.splice(index, 1)
-        return pizzaBorrada[0]
-    }
-    return undefined
+    return await Pizza.findByIdAndDelete(id);
 }
