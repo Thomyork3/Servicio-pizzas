@@ -73,10 +73,7 @@ app.delete("/api/v1/pizzas/:id", async (req, res) => {
       return res.status(400).json({ mensaje: "ID inválido o error al eliminar" });
   }
 });
-// Ruta para ver el reporte HTML
-app.get("/reporte", (req, res) => {
-  res.sendFile(import.meta.dirname + "/reporte.html");
-});
+
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Servidor Express escuchando en el puerto http://localhost:${PORT}`);
