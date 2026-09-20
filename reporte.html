@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Pizzas</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+
+    <h1>🍕 Catálogo de Pizzas🍕</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre🍕</th>
+                <th>Descripción🍕</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-pizzas">
+            
+        </tbody>
+    </table>
+
+    <script>
+        
+        async function obtenerDatos() {
+            const respuesta = await fetch('http://localhost:3000/api/v1/pizzas');
+            const pizzas = await respuesta.json();
+            
+            const cuerpoTabla = document.getElementById('tabla-pizzas');
+            
+            pizzas.forEach(pizza => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${pizza._id}</td>
+                    <td>${pizza.nombre}</td>
+                    <td>${pizza.descripcion}</td>
+                `;
+                cuerpoTabla.appendChild(fila);
+            });
+        }
+
+        obtenerDatos();
+    </script>
+</body>
+</html>
